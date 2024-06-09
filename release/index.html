@@ -1,0 +1,45 @@
+{{ define "index.html" }}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🚀 Release management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
+</head>
+
+<body class="antialiased text-slate-900 bg-slate-50">
+    <header class="p-4 shadow-md bg-green-600 text-white">
+        <div class="container mx-auto ">
+            <a href="/">
+                <h2 class="text-lg font-semibold">Release management</h2>
+            </a>
+            <h3>👋 Hi <i>{{ .Email }}</i>, choose service for release </h3>
+        </div>
+    </header>
+
+    <main class="pb-12 mt-5 min-h-screen">
+        <div class="container mx-auto ">
+            <div class="grid sm:grid-cols-4 gap-4">
+                {{ range .Services }}
+                <div>
+                    <a href="/services/{{ . }}">
+                        <div
+                            class="transition-all hover:text-blue-600 bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div class="font-medium ">{{ . }}</div>
+                                <div title="Last update" class="text-xs text-slate-400">-</div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {{ end }}
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
+
+{{ end }}

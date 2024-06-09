@@ -1,0 +1,99 @@
+{{ define "detail.html" }}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🚀 Release management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
+</head>
+
+<body class="antialiased text-slate-900 bg-slate-50">
+
+    <header class="p-4 shadow-md bg-green-600 text-white ">
+        <div class="container mx-auto ">
+            <a href="/">
+                <h2 class="text-lg font-semibold">Release management</h2>
+            </a>
+            <h3>👋 Hi <i>{{ .Email }}</i> </h3>
+        </div>
+    </header>
+
+    <main class="pb-12 mt-5 min-h-screen">
+        <div class="px-4 xl:px-0 container mx-auto">
+            <nav>
+                <h3 class="text-2xl font-medium underline"><a href="/services/{{ .Service }}">Back</a></h3>
+            </nav>
+
+            <div class="space-y-3 mt-4">
+                <div class="flex items-center ">
+                    <div class="" style="width: 10em;">Service</div>
+                    <div class=""><b>{{ .Service }}</b></div>
+                </div>
+                <div class="flex items-center ">
+                    <div class="" style="width: 10em;">Owners</div>
+                    <div class=""><b>{{ .ServiceOwners }}</b></div>
+                </div>
+                <div class="flex items-center ">
+                    <div class="" style="width: 10em;">ref</div>
+                    <div class=""><b>{{ .ToTag }}</b></div>
+                </div>
+                <div class="flex items-center ">
+                    <div class="" style="width: 10em; ">{{ .OptEnv }}</div>
+                    <div class=""><b>{{ .FromTag }}</b></div>
+                </div>
+            </div>
+
+            {{ if or (eq .OptEnv "prod") (eq .OptEnv "stage") }}
+            <div class="my-5">
+                <a
+                    href="/services/{{ .Service }}/confirm?opt_env={{ $.OptEnv }}&from_tag={{ .FromTag }}&to_tag={{ .ToTag }}">
+                    <div
+                        class="transition-all font-medium bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-lg inline-block hover:shadow-lg">
+                        Release
+                    </div>
+                </a>
+            </div>
+            {{ end }}
+
+            <div class="w3-container">
+                <h3 class="text-2xl font-medium mb-4 text-center">Release Logs </h3>
+
+                <table class="min-w-full table-auto shadow-md">
+                    <tr class="text-left bg-slate-500 text-white">
+                        <th class="px-4 py-3">User</th>
+                        <th class="px-4 py-3">Message</th>
+                        <th class="px-4 py-3">Time</th>
+                        <th class="px-4 py-3">Status</th>
+                    </tr>
+
+                    {{ range .ReleaseLogs }}
+                    <tr class="border-t [&]:even:bg-slate-200">
+                        <td class="px-4 py-2">
+                            <pre class="whitespace-normal">{{ .Deployer }}</pre>
+                        </td>
+                        <td class="py-2">
+                            <pre class="whitespace-normal">{{ range .LineMessages }} 
+                                                                          {{ . }}<br>
+                                                                        {{ end }}</pre>
+                        </td>
+                        <td>
+                            <pre class="whitespace-normal">{{ .CreatedAt }}</pre>
+                        </td>
+                        <td>
+                            <pre class="whitespace-normal">{{ .Status }}</pre>
+                        </td>
+                    </tr>
+                    {{ end }}
+                </table>
+            </div>
+        </div>
+    </main>
+
+
+</body>
+
+</html>
+
+{{ end }}

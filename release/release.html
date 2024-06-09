@@ -1,0 +1,219 @@
+{{ define "release.html" }}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🚀 Release management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
+
+    <style type="text/css">
+        dummydeclaration {
+            padding-left: 4em;
+        }
+
+        /* Firefox ignores first declaration for some reason */
+        tab1 {
+            padding-left: 4em;
+        }
+
+        tab2 {
+            padding-left: 8em;
+        }
+
+        tab3 {
+            padding-left: 12em;
+        }
+
+        tab4 {
+            padding-left: 16em;
+        }
+
+        tab5 {
+            padding-left: 20em;
+        }
+
+        tab6 {
+            padding-left: 24em;
+        }
+
+        tab7 {
+            padding-left: 28em;
+        }
+
+        tab8 {
+            padding-left: 32em;
+        }
+
+        tab9 {
+            padding-left: 36em;
+        }
+
+        tab10 {
+            padding-left: 40em;
+        }
+
+        tab11 {
+            padding-left: 44em;
+        }
+
+        tab12 {
+            padding-left: 48em;
+        }
+
+        tab13 {
+            padding-left: 52em;
+        }
+
+        tab14 {
+            padding-left: 56em;
+        }
+
+        tab15 {
+            padding-left: 60em;
+        }
+
+        tab16 {
+            padding-left: 64em;
+        }
+
+        #ChangeLog h5 {
+            margin: 10px 0 !important;
+            font-size: 18px !important;
+            font-weight: 500;
+        }
+
+        #ChangeLog a:hover {
+            color: #EC9A3F !important;
+        }
+    </style>
+
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const submitURL = "/services/{{ .Service }}/release";
+
+    $(document).ready(function () {
+        $.get("/services/{{ .Service }}/change-log?from_tag={{ .FromTag }}&to_tag={{ .ToTag }}", function (data) {
+            $("#ChangeLog").append(data.data)
+        });
+
+        // 🚩 Submit release
+        $('#release-form').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: submitURL,
+                type: 'post',
+                data: $('#release-form').serialize(),
+                success: function (data) {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Some service will take serveral minutes to reload!",
+                        icon: "success",
+                        timer: 2500,
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+            })
+        })
+    });
+</script>
+<script>
+    function clicked(e) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Check you tag correct before release! ",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, release it!",
+            confirmButtonColor: "#DC2626",
+            cancelButtonColor: "#2563EB",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#release-form').submit()
+            }
+        });
+    }
+</script>
+
+<body class="antialiased text-slate-900 bg-slate-50">
+    <header class="p-4 shadow-md bg-green-600 text-white">
+        <div class="container mx-auto ">
+            <a href="/">
+                <h2 class="text-lg font-semibold">Release management</h2>
+            </a>
+            <h3>👋 Hi <i>{{ .Email }}</i>, do you want to deploy {{ .Service }}? </h3>
+        </div>
+    </header>
+
+    <main class="pb-12 mt-5 min-h-screen">
+        <div class="px-4 xl:px-0 container mx-auto">
+            <form id="release-form" enctype="application/x-www-form-urlencoded">
+                {{ if eq .ToTag .FromTag }}
+                <h3>Note: Release tag are same previous (={{ .ToTag }}), the deployment will be reload only</h3>
+                {{ end }}
+                <div class="space-y-4">
+                    <div class="flex items-center gap-x-20">
+                        <div class="text-xl font-semibold min-w-40">Service</div>
+                        <div class="font-medium">{{ .Service }}</div>
+                    </div>
+                    <div class="flex items-center gap-x-20">
+                        <div class="text-xl font-semibold min-w-40">Current Tag</div>
+                        <div class="font-medium">{{ .FromTag }}</div>
+                    </div>
+                    <div class="flex items-center gap-x-20">
+                        <div class="text-xl font-semibold min-w-40">Next Tag</div>
+                        <div class="">
+                            <input type="text" value="{{ .ToTag }}" name="to_tag"
+                                class="px-3 py-2 rounded-lg border border-slate-400 font-semibold " />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <input type="hidden" name="from_tag" value="{{ .FromTag }}" />
+                    <input type="hidden" name="to_tag" value="{{ .ToTag }}" />
+                    <input type="hidden" name="service" value="{{ .Service }}" />
+                    <input type="hidden" name="opt_env" value="{{ .OptEnv }}" />
+
+                    <div class="flex items-center gap-x-4">
+                        <div>
+                            <input type="button" onclick="clicked(event)"
+                                class="cursor-pointer transition-all font-medium bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-lg inline-block hover:shadow-lg"
+                                value="Release" />
+                        </div>
+
+                        <div>
+                            <a href="/services/{{ .Service }}/detail?opt_env={{ $.OptEnv }}" class="">
+                                <div
+                                    class="transition-all font-medium bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg inline-block hover:shadow-lg">
+                                    Cancel
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mt-6">
+                    <div class="bg-slate-200 pb-6 shadow-md">
+                        <table class="min-w-full table-auto ">
+                            <tr class="text-left bg-slate-500 text-white">
+                                <th class="px-4 py-3">Change Log</th>
+                            </tr>
+                            <tr id="ChangeLog" class="prose"></tr>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+</body>
+
+</html>
+{{ end }}
